@@ -170,9 +170,13 @@ function setClickCount() {
     document.getElementById("clickCount").innerText = totalClick;
 }
 
-function closeResult() {
+function closeResult(srcId) {
     document.getElementById("final-rst").style.display="";
-    refreshStarts();
+    if (srcId === "rst-close"){
+        refreshStarts();
+    } else {
+        gameRestart();
+    }
 }
 
 function cardClick(card) {
