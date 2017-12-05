@@ -20,15 +20,24 @@ let CardsId = [];
  */
 let CardsTypeMap = new Map();
 
-//  record timeid for time lapse
+/*
+ * record timeid for time lapse
+ */
 let IntervalId = null;
+
+/*
+ * record start time
+ */
 let StartTime = null;
 let endTime = null;
-let totalClick = 0;
 
-// Score and Count will remain until user refresh
-let TotalScore = 0;
-let StartCount = 0;
+/*
+ * record click count
+ */
+let TotalClick = 0;
+
+// Start for game
+let StartCount = 3;
 
 /*
  * Display the cards on the page
@@ -71,7 +80,6 @@ function checkWin(){
     'use strict';
 
     if(document.getElementsByClassName('match').length === CardArray.length) {
-        document.getElementById("final-rst").style.display="inherit";
         endTime = Date.now();
         clearInterval(IntervalId);
 
@@ -80,23 +88,12 @@ function checkWin(){
         document.getElementById("rst-cost-time").innerText = "Cost " + costTime + " seconds!";
 
         // get start
-        if (costTime < 60){
-            TotalScore++;
+        if (costTime < 31 || clickCount <= 32){
+            StartCount = 3;
         }
-        if(clickCount < 32) {
-            TotalScore++;
-        }
-
-        let newStart = Math.floor(TotalScore/5);
-
-        if (newStart > 0){
-            StartCount += newStart;
-            TotalScore -= newStart * 5;
-            document.getElementById("rst-score").innerText = `You get ${newStart} new start!`;
-        } else {
-            document.getElementById("rst-score").innerText = `You have ${StartCount} start${StartCount>1?'s':''}` ;
-        }
-
+        refreshStarts();
+        document.getElementById("rst-score").innerText = `You get ${StartCount} start${StartCount>1?'s':''}!`;
+        document.getElementById("final-rst").style.display="inherit";
     }
 }
 
@@ -149,7 +146,7 @@ function checkMatch(latestId) {
         noMatchCards.forEach(function(cardId){
                 document.getElementById(cardId).setAttribute("class", "card unmatch");
             });
-        // set to unshow
+        // clear unmatch
         setTimeout(function(){
             noMatchCards.forEach(function(cardId){
                 document.getElementById(cardId).setAttribute("class", "card");
@@ -162,12 +159,26 @@ function checkMatch(latestId) {
     // console.log(noMatchCards);
 }
 
-function setTimeLapse(){
+// function setTimeLapse(){
+function pageRefresh () {
     document.getElementById("timeLapse").innerText = StartTime === null ? 0 :`${Math.floor((Date.now() - StartTime)/1000)}`;
+    var matchCount = document.getElementsByClassName("match").length;
+    if (TotalClick > 55){
+        StartCount = 0;
+    } else if (TotalClick > 24){
+        if (matchCount < 9){
+            StartCount = 1;
+        } else if (matchCount < 12){
+            StartCount = 2;
+        }
+    } else if (TotalClick > 10 && matchCount < 4) {
+            StartCount = 2;
+    }
+    refreshStarts();
 }
 
 function setClickCount() {
-    document.getElementById("clickCount").innerText = totalClick;
+    document.getElementById("clickCount").innerText = TotalClick;
 }
 
 function closeResult(srcId) {
@@ -184,14 +195,14 @@ function cardClick(card) {
 
     if (IntervalId === null) {
         StartTime = Date.now();
-        IntervalId = setInterval(setTimeLapse, 1000);
+        IntervalId = setInterval(pageRefresh, 1000);
     }
     for (let cardClass of card.classList) {
         if (cardClass === "show") {
             return;
         }
     }
-    totalClick ++;
+    TotalClick ++;
     setClickCount();
 
     card.setAttribute("class", "card open show");
@@ -233,8 +244,8 @@ function gameRestart() {
     }
 
     StartTime = null;
-    setTimeLapse();
-    totalClick = 0;
+    pageRefresh();
+    TotalClick = 0;
     setClickCount();
 
     initCards();
