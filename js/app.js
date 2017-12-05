@@ -244,8 +244,9 @@ function gameRestart() {
     }
 
     StartTime = null;
-    pageRefresh();
+    StartCount = 3;
     TotalClick = 0;
+    pageRefresh();
     setClickCount();
 
     initCards();
