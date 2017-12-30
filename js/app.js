@@ -80,10 +80,11 @@ function checkWin(){
     'use strict';
 
     if($('.match').length === CardArray.length) {
-        endTime = Date.now();
+        // endTime = Date.now();
+        endTime = moment();
         clearInterval(IntervalId);
 
-        let costTime = Math.floor((endTime - StartTime)/1000);
+        let costTime = Math.floor(moment.duration(endTime-StartTime).asSeconds());
 
         $('#rst-cost-time').text("Cost " + costTime + " seconds!");
 
@@ -162,7 +163,7 @@ function checkMatch(latestId) {
 
 // function setTimeLapse(){
 function pageRefresh () {
-    $('#timeLapse').text(StartTime === null ? 0 :`${Math.floor((Date.now() - StartTime)/1000)}`);
+    $('#timeLapse').text(StartTime === null ? 0 :`${Math.floor(moment.duration(moment()-StartTime).asSeconds())}`);
     var matchCount = $('.match').length;
     if (TotalClick > 55){
         StartCount = 0;
@@ -195,7 +196,7 @@ function cardClick(card) {
     'use strict';
 
     if (IntervalId === null) {
-        StartTime = Date.now();
+        StartTime = moment();
         IntervalId = setInterval(pageRefresh, 1000);
     }
     for (let cardClass of card.classList) {
