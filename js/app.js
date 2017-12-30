@@ -79,30 +79,31 @@ function shuffle(array) {
 function checkWin(){
     'use strict';
 
-    if(document.getElementsByClassName('match').length === CardArray.length) {
+    if($('.match').length === CardArray.length) {
         endTime = Date.now();
         clearInterval(IntervalId);
 
         let costTime = Math.floor((endTime - StartTime)/1000);
-        console.log(`cost ${costTime}`);
-        document.getElementById("rst-cost-time").innerText = "Cost " + costTime + " seconds!";
+
+        $('#rst-cost-time').text("Cost " + costTime + " seconds!");
 
         // get start
         if (costTime < 31 || clickCount <= 32){
             StartCount = 3;
         }
         refreshStarts();
-        document.getElementById("rst-score").innerText = `You get ${StartCount} start${StartCount>1?'s':''}!`;
-        document.getElementById("final-rst").style.display="inherit";
+
+        $('#rst-score').text(`You get ${StartCount} start${StartCount>1?'s':''}!`);
+        $('#final-rst').css('display', 'inherit');
     }
 }
 
 function switchRule(show){
     'use strict';
     if(show){
-        document.getElementById("game-rule").style.display="inherit";
+        $('#game-rule').css('display', 'inherit');
     } else {
-        document.getElementById("game-rule").style.display="";
+        $('#game-rule').css('display', '');
     }
 
     console.log("switch rule");
@@ -115,7 +116,7 @@ function checkMatch(latestId) {
     // get opened cards without match
     let noMatchCards = [];
 
-    for(let card of document.getElementsByClassName('show')) {
+    for(let card of $('.show')) {
         if (card.classList.contains("match")){
             continue;
         }
@@ -134,8 +135,8 @@ function checkMatch(latestId) {
         if (CardsTypeMap.get(cardId) === CardsTypeMap.get(latestId)){
             findMatch = true;
 
-            document.getElementById(cardId).setAttribute("class", "card open show match");
-            document.getElementById(latestId).setAttribute("class", "card open show match");
+            $(`#${cardId}`).attr("class", "card open show match");
+            $(`#${latestId}`).attr("class", "card open show match");
 
             checkWin();
             break;
@@ -144,12 +145,12 @@ function checkMatch(latestId) {
 
     if(!findMatch){
         noMatchCards.forEach(function(cardId){
-                document.getElementById(cardId).setAttribute("class", "card unmatch");
+                $(`#${cardId}`).attr("class", "card unmatch");
             });
         // clear unmatch
         setTimeout(function(){
             noMatchCards.forEach(function(cardId){
-                document.getElementById(cardId).setAttribute("class", "card");
+                $(`#${cardId}`).attr("class", "card");
             });
         }, 1100);
 
@@ -161,8 +162,8 @@ function checkMatch(latestId) {
 
 // function setTimeLapse(){
 function pageRefresh () {
-    document.getElementById("timeLapse").innerText = StartTime === null ? 0 :`${Math.floor((Date.now() - StartTime)/1000)}`;
-    var matchCount = document.getElementsByClassName("match").length;
+    $('#timeLapse').text(StartTime === null ? 0 :`${Math.floor((Date.now() - StartTime)/1000)}`);
+    var matchCount = $('.match').length;
     if (TotalClick > 55){
         StartCount = 0;
     } else if (TotalClick > 24){
@@ -177,12 +178,12 @@ function pageRefresh () {
     refreshStarts();
 }
 
-function setClickCount() {
-    document.getElementById("clickCount").innerText = TotalClick;
+function setActionCount() {
+    $('#clickCount').text(Math.floor(TotalClick/2));
 }
 
 function closeResult(srcId) {
-    document.getElementById("final-rst").style.display="";
+    $('#final-rst').css("display",'');
     if (srcId === "rst-close"){
         refreshStarts();
     } else {
@@ -203,7 +204,7 @@ function cardClick(card) {
         }
     }
     TotalClick ++;
-    setClickCount();
+    setActionCount();
 
     card.setAttribute("class", "card open show");
 
@@ -224,7 +225,7 @@ function initCards() {
 
         CardsTypeMap.set(cardId, cardType);
     }
-    document.getElementById("deck").innerHTML=newCards;
+    $('#deck').html(newCards);
 }
 
 function refreshStarts() {
@@ -233,7 +234,7 @@ function refreshStarts() {
         let startClass = index < StartCount ? 'fa-star' : 'fa-star-o';
         starts += `<li><i class="fa ${startClass}"></i></li>`;
     }
-    document.getElementById("starts").innerHTML=starts;
+    $('#starts').html(starts);
 }
 
 function gameRestart() {
@@ -247,7 +248,7 @@ function gameRestart() {
     StartCount = 3;
     TotalClick = 0;
     pageRefresh();
-    setClickCount();
+    setActionCount();
 
     initCards();
 
